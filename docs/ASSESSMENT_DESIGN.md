@@ -21,19 +21,19 @@ Primary sources:
 
 ## IQ & reasoning: original culture-reduced battery
 
-40 items in five sections, eight per section. Each section includes four task families at two authored complexity levels. A section allows seven minutes in timed mode. These timings and complexity labels are engineering judgments awaiting pilot testing, not measured time norms or calibrated difficulty parameters.
+Version 2 has 50 questions in five sections, ten per section, six options per question. Each section samples eight questions from four task families at two authored complexity levels plus two questions from new advanced families. The timed mode allows 12 minutes per section (60 minutes total); practice is untimed. Timing and difficulty are design choices awaiting pilot testing, not measured norms or calibrated item parameters.
 
 | Domain | Families |
 | --- | --- |
-| Visual patterns | Exclusive-OR matrices; overlay matrices; rotations; numeric row patterns |
-| Number sequences | Arithmetic steps; multiplication with offset; changing differences; alternating sequences |
-| Spatial | Mental rotation; reflection; paper folding/punching; opposite cube faces |
-| Logic | Ordering; categorical deductions; symbol-value inference; equivalent balances |
-| Quantitative | Numeric rule tables; proportions; input/output rules; missing-value equations |
+| Visual patterns | Exclusive-OR and overlay matrices; rotations; numeric row patterns; rotated XOR; subtract then rotate |
+| Number sequences | Alternating steps; multiplication with offset; changing differences; interleaved series; quadratic differences; alternating operations |
+| Spatial | Mental rotation; reflection; paper folding; cube nets; two-axis folding; composite transforms |
+| Logic | Ordering; categorical deduction; symbol-value inference; balances; multistep group deductions; weight ranking |
+| Quantitative | Numeric rule tables; proportions; input/output rules; missing-value equations; simultaneous equations; composite row formulas |
 
-Each item stores its family, seed, authored level, generated stimulus, shuffled alternatives, correct key, and explanation. The generator's solutions are deterministic; alternatives are distinct. It excludes repeated stimulus fingerprints within a form, and prefers variants absent from prior local exposures. A deterministic audit of 2,000 seed/level pairs per family observed **31,849 distinct question fingerprints** across 40,000 candidates. This is a sampled observed count, not a calibrated bank size. Family diversity is only 20; different parameterizations are not independent psychometric items. Some families have far fewer distinct variants and may repeat after extensive use. Exposure history is private and device-specific.
+Each generated item stores its family, seed, authored level, stimulus, shuffled alternatives, correct key, and explanation. The generator checks unique answer choices and avoids repeated stimuli within a form; past locally exposed patterns are avoided when possible. Some finite visual families exhaust sooner than others and may repeat on extensive retakes. Family diversity is 30; parameterized variants are not calibrated psychometric items.
 
-Correct = 1, incorrect/omitted = 0. No speed bonus, guessed-answer correction, invented IQ conversion, or population percentile. Sections are scored separately and as raw total accuracy. The average of an arbitrary web sample is not enough to declare “100 IQ.” Practice effects and unequal generated form difficulty prevent interpreting differences as changes in intelligence.
+Correct = 1, incorrect or omitted = 0. Timed version-2 results display an experimental IQ-style number using `round_to_nearest_5(100 + 15 × (raw_correct − 25) / 8)`. The hypothetical midpoint of 25/50 and spread of eight items were chosen by design. They **are not measured norms**; the number cannot indicate standing relative to the general population, and a five-point rounding does not make it reliable. Practice and earlier 40-item results report raw accuracy without this conversion. No percentile, speed bonus, or clinical label is reported. Different generated forms have not been equated. Even if an arbitrary web sample averages 25/50, it cannot define 100 IQ. Age-appropriate representative norms, calibration, reliability, practice effects, fairness, and validity must be studied before a standardized IQ can be claimed.
 
 Why not “no culture”: spatial conventions, schooling, numeric literacy, English instructions, visual acuity, dexterity, device format, and prior puzzle exposure affect results. The battery reduces vocabulary/trivia content but cannot eliminate cultural influences. It is also not a full clinical cognitive battery: there is no standardized verbal-comprehension, processing-speed, or working-memory assessment. Color is not needed to solve the puzzles; tile descriptions are exposed to assistive technology, but alternative modalities are not assumed equivalent.
 
@@ -55,11 +55,11 @@ Do not infer party membership or predict voting: party systems differ across jur
 
 ## Dark triad: SD4
 
-The author's measures page places the 28-item Short Dark Tetrad in the public domain and permits use without permission. The original author file, item order, wording, and scoring are retained. Each of four subscales has seven items, scored as the mean of 1–5 agreement responses. All seven are required. Report Machiavellianism, narcissism, and psychopathy-related traits as the three primary results; report sadism separately because it is a supplementary fourth construct. Never combine them into an “evil” or “darkness” score.
+The author's measures page places the 28-item Short Dark Tetrad (SD4) in the public domain. Version 1 retains its exact original text and scoring in `app/data/dark-v1.js`. Version 2 replaces each statement with a concrete self-report of behavior, reaction, or interpersonal motivation. See `DARK_ITEM_REVISIONS.md` for a paired audit. The adapted items retain a four-domain, seven-items-per-domain structure, but **they are not the published or validated SD4 instrument**. Interpretation and cutoffs cannot be transferred from SD4; scoring means of 1–5 are descriptive only. Old saved and imported sessions keep their original wording and results.
 
-The SD4 is brief and imperfect. Its psychopathy content emphasizes disinhibition and antagonism, not an exhaustive empathy/remorse or clinical evaluation; its narcissism content emphasizes grandiosity and leadership/self-importance. Entertainment preferences and isolated behaviors cannot identify a diagnosis. A self-report can be distorted intentionally or unintentionally. The author's student norms (predominantly young female students) are not treated as representative of a general adult app audience.
+The three main scores cover Machiavellianism, narcissism-related attitudes, and psychopathy-related behaviors. A fourth, sadism, is separate. Avoid a combined darkness or evil score. Examples ask what the person has done or enjoyed, rather than whether they agree with a broad fact or a socially acceptable maxim. The statements still depend on self-report, memory, willingness to answer candidly, and individual context; none can diagnose a disorder or predict harmful behavior. Adults should consider a typical pattern over the past year, with response labels from “Very unlike me” to “Very like me.”
 
-“Lower endorsement” = mean below 2.5; “higher endorsement” = above 3.5; otherwise “mixed endorsement.” These are plain-language response-scale descriptions, not diagnostic cutoffs or normative classifications. Use non-stigmatizing explanations and no violence-risk claims.
+“Lower endorsement” = mean below 2.5; “higher endorsement” = above 3.5; otherwise “mixed endorsement.” These are response-scale descriptions, not diagnostic cutoffs or normative classifications. The new wording requires cognitive interviews, item analysis, reliability, factor structure, and convergent validation before quantitative interpretation beyond the observed response pattern.
 
 Sources:
 

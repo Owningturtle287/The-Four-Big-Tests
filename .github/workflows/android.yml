@@ -25,6 +25,8 @@ jobs:
         working-directory: native
       - run: npx cap add android
         working-directory: native
+      - run: node version.mjs android
+        working-directory: native
       - run: node icons.mjs android
         working-directory: native
       - run: npx cap sync android

@@ -1,6 +1,6 @@
 # The Four Big Tests
 
-**[Open the live app](https://owningturtle287.github.io/The-Four-Big-Tests/)** · **[Download the Android test build](https://github.com/Owningturtle287/The-Four-Big-Tests/actions/runs/35717207876)** (open the APK artifact under Artifacts; GitHub sign-in may be required).
+**[Open the live app](https://owningturtle287.github.io/The-Four-Big-Tests/)** · **[Download the Android test build](https://github.com/Owningturtle287/The-Four-Big-Tests/actions/workflows/android.yml)** (choose the latest successful run and its APK artifact; GitHub sign-in may be required).
 
 A light, mobile-first assessment app with four top tabs, offline installation, named progress saves, unlimited retakes, dated result history, private notes, and JSON backup import/export. There is no app-imposed save limit; device storage capacity still applies.
 
@@ -9,11 +9,11 @@ A light, mobile-first assessment app with four top tabs, offline installation, n
 | Test | Length | What the app reports |
 | --- | --- | --- |
 | Personality | 120 statements, about 15–20 minutes | IPIP-NEO-120: five broad traits and 30 facets |
-| IQ & reasoning | 40 questions, five 7-minute sections | Raw accuracy and five reasoning domains; separate untimed practice mode |
+| IQ & reasoning | 50 questions, five 12-minute sections, six choices each | Raw accuracy, five domains, and an experimental IQ-style number in timed mode; separate untimed practice |
 | Political preferences | Exactly 101 statements, about 20–25 minutes | Two compass axes and 12 policy areas |
-| Dark triad | 28 statements, about 4–6 minutes | SD4 Machiavellianism, narcissism, and psychopathy-related scores; sadism reported separately |
+| Dark triad | 28 behavior-focused statements, about 5–7 minutes | Four separate trait scales inspired by SD4; sadism reported separately |
 
-**Accuracy boundary:** A polished questionnaire is not automatically a validated assessment. The personality and SD4 instruments have published research; their implementation, interpretation, and intended population still need study. The revised political questions and original reasoning generator are **not empirically validated**. The reasoning test deliberately does **not invent a standardized IQ score, percentile, or clinical classification**. A culture-free test cannot be promised. This app is for self-reflection, not diagnosis, hiring, educational placement, or another consequential decision.
+**Accuracy boundary:** A polished questionnaire is not automatically a validated assessment. The personality instrument and original SD4 have published research. The revised dark wording, political questions, and original reasoning generator are **not empirically validated**. The timed reasoning result displays a numeric **provisional IQ-style estimate**, using assumed raw-score anchors: 25/50 maps to 100 and eight more correct answers add 15 points. These assumptions are not population norms. This is **not a standardized IQ score, percentile, or clinical classification**. A culture-free test cannot be promised. This app is for self-reflection, not diagnosis, hiring, educational placement, or another consequential decision.
 
 ## Run and build
 
@@ -57,12 +57,14 @@ cd native
 npm ci
 npm run build
 npx cap add android
+node version.mjs android
 node icons.mjs android
 npx cap sync android
 npx cap open android
 
 # On macOS with Xcode 26 or later:
 npx cap add ios
+node version.mjs ios
 node icons.mjs ios
 npx cap sync ios
 npx cap open ios
@@ -86,6 +88,8 @@ npx cap open ios
 
 - [Assessment methods and validation plan](docs/ASSESSMENT_DESIGN.md)
 - [All 101 original and revised political statements](docs/POLITICAL_REVISIONS.md)
+- [Original and behavior-focused dark-triad items](docs/DARK_ITEM_REVISIONS.md)
+- [Changelog and instrument versions](CHANGELOG.md)
 - [Original supplied political package and instrument keys](docs/source/)
 - [Third-party notices](THIRD_PARTY_NOTICES.md)
 
@@ -93,9 +97,9 @@ The original political graph's economic/governance structure, 12 facets, and sig
 
 ## Verification
 
-The initial release passed all 15 automated checks locally and in GitHub Actions. The Pages deployment and Android APK build both succeeded. Live-browser checks confirmed question rendering, named saves, reload persistence, and practice-mode generation. These checks do not substitute for physical-device testing or psychometric validation.
+The first release passed all automated checks locally and in GitHub Actions. Its Pages deployment and Android APK build succeeded. The current version should pass the same verification gates on each push; GitHub Actions publishes the latest version after checks. Software tests do not establish psychometric validity.
 
-Run `npm test` for reverse-scoring endpoints, incomplete-scale handling, political normalization and coverage, abstract transformations, generated-puzzle structure and solutions, repeat avoidance, timer deadlines, and backup integrity. The generator checks examine 20,000 variants across all 20 task families. These are software correctness tests, **not evidence of psychometric validity**.
+Run `npm test` for reverse-scoring endpoints, incomplete-scale handling, political normalization and coverage, abstract transformations, generated-puzzle structure and solutions, repeat avoidance, timer deadlines, and backup integrity. The generator checks examine 30,000 variants across all 30 task families. Backups from version 1 retain their original scoring and question wording. These are software correctness tests, **not evidence of psychometric validity**.
 
 ## File map
 

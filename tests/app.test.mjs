@@ -37,9 +37,17 @@ test('App flow: autosave, resume, named results, history filters, and expired IQ
   click('[data-action=history]');assert.equal(d.querySelectorAll('.save-card').length,2);
   d.querySelector('#filter-type').value='dark';d.querySelector('#filter-type').dispatchEvent(new window.Event('change',{bubbles:true}));assert.equal(d.querySelectorAll('.save-card').length,1);
   click('[data-tab=iq]');click('[data-action=new]');click('[data-action=create]');await until(()=>d.querySelector('[data-action=begin-section]'));click('[data-action=begin-section]');await until(()=>d.querySelector('#timer'));
-  let iq=(await allAttempts()).find(a=>a.type==='iq');assert.equal(iq.deadline!==null,true);assert.equal(iq.items.length,40);
+  let iq=(await allAttempts()).find(a=>a.type==='iq');assert.equal(iq.deadline!==null,true);assert.equal(iq.items.length,50);assert.equal(iq.items[0].options.length,6);
   // Move wall time beyond the persisted deadline, then invoke the real visibility handler.
   const oldNow=Date.now;Date.now=()=>iq.deadline+1;try{d.dispatchEvent(new window.Event('visibilitychange'));await until(()=>d.querySelector('.break-screen .eyebrow')?.textContent.includes('Section 2'));}finally{Date.now=oldNow;}
-  iq=(await allAttempts()).find(a=>a.type==='iq');assert.equal(iq.section,1);assert.equal(iq.betweenSections,true);assert.equal(iq.deadline,null);assert.equal(Object.keys(iq.answers).length,8);assert.ok(Object.values(iq.answers).every(a=>a===-1));
+  iq=(await allAttempts()).find(a=>a.type==='iq');assert.equal(iq.section,1);assert.equal(iq.betweenSections,true);assert.equal(iq.deadline,null);assert.equal(Object.keys(iq.answers).length,10);assert.ok(Object.values(iq.answers).every(a=>a===-1));
+  for(let section=1;section<5;section++){
+   click('[data-action=begin-section]');await until(()=>d.querySelector('#timer'));
+   iq=(await allAttempts()).find(a=>a.type==='iq');
+   const previous=Date.now;Date.now=()=>iq.deadline+1;
+   try{d.dispatchEvent(new window.Event('visibilitychange'));await until(()=>section===4?d.querySelector('.score-estimate'):d.querySelector('.break-screen .eyebrow')?.textContent.includes(`Section ${section+2}`));}finally{Date.now=previous;}
+  }
+  iq=(await allAttempts()).find(a=>a.type==='iq');assert.equal(iq.status,'complete');assert.equal(Object.keys(iq.answers).length,50);
+  assert.match(d.querySelector('.score-estimate').textContent,/55/);
  }finally{globalThis.setInterval=nativeInterval;window.close();}
 });

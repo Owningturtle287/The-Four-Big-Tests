@@ -1,6 +1,6 @@
 {
   "name": "the-four-big-tests",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "private": true,
   "type": "module",
   "description": "Four thoughtful assessments, with private saves and offline installation.",

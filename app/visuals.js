@@ -9,7 +9,7 @@ export function stimulus(s){
  if(s.kind==='matrix')return `<div class="matrix">${s.cells.map(v=>v===null?'<div class="missing" aria-label="Missing tile">?</div>':tile(v)).join('')}</div>`;
  if(s.kind==='numberMatrix')return `<div class="number-matrix">${s.cells.map(v=>`<span${v===null?' class="missing"':''}>${v??'?'}</span>`).join('')}</div>`;
  if(s.kind==='single')return `<div class="single-tile">${tile(s.tile,true)}</div>`;
- if(s.kind==='fold')return `<div class="fold-tile">${tile(s.tile,true)}<span class="fold-line" aria-hidden="true"></span></div><p class="caption">Folded left half · dashed line is the fold</p>`;
+ if(s.kind==='fold')return `<div class="fold-tile">${tile(s.tile,true)}<span class="fold-line" aria-hidden="true"></span>${s.double?'<span class="fold-line-horizontal" aria-hidden="true"></span>':''}</div><p class="caption">${s.double?'Folded top-left quarter · dashed lines show both folds':'Folded left half · dashed line is the fold'}</p>`;
  if(s.kind==='cube'){const p=[[1,0],[0,1],[1,1],[2,1],[1,2],[1,3]];return `<div class="cube-net" role="img" aria-label="Cube net: top ${s.faces[0]}; next row ${s.faces[1]}, ${s.faces[2]}, ${s.faces[3]}; below center ${s.faces[4]}; bottom ${s.faces[5]}">${s.faces.map((n,i)=>`<span style="grid-column:${p[i][0]+1};grid-row:${p[i][1]+1}">${n}</span>`).join('')}</div>`;}
  if(s.kind==='sequence')return `<div class="sequence">${s.values.map(v=>`<span>${v}</span>`).join('<span class="separator">·</span>')}<span class="sequence-question">?</span></div>`;
  if(s.kind==='facts')return `<div class="facts">${s.lines.map(l=>`<p>${escape(l)}</p>`).join('')}</div>`;

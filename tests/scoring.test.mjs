@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {PERSONALITY_ITEMS} from '../app/data/personality.js';
 import {DARK_ITEMS} from '../app/data/dark.js';
 import {POLITICAL_ITEMS} from '../app/data/politics.js';
-import {scoreTraits,scorePolitics,endorsement} from '../app/scoring.js';
+import {scoreTraits,scorePolitics,endorsement,assessmentItems,LEGACY_DARK_VERSION,DEFINITIONS} from '../app/scoring.js';
 test('Instrument structure: 120 personality, 28 dark, exactly 101 political questions',()=>{
  assert.equal(PERSONALITY_ITEMS.length,120);assert.equal(DARK_ITEMS.length,28);assert.equal(POLITICAL_ITEMS.length,101);
  for(const items of [PERSONALITY_ITEMS,DARK_ITEMS,POLITICAL_ITEMS])assert.equal(new Set(items.map(q=>q.id)).size,items.length);
@@ -21,11 +21,18 @@ test('Reverse keyed personality items align; full-scale endpoints and neutral ar
  }
  delete high.P001;assert.equal(scoreTraits('personality',high).domains.find(d=>d.key==='N').position,null);
 });
-test('SD4 independent means and missing-item handling',()=>{
+test('Version 2 dark-trait items yield independent means and withhold incomplete scales',()=>{
  const answers=Object.fromEntries(DARK_ITEMS.map(q=>[q.id,{M:5,N:4,P:2,S:1}[q.domain]]));
  assert.deepEqual(scoreTraits('dark',answers).domains.map(d=>d.mean),[5,4,2,1]);
  assert.equal(endorsement(3),'Mixed endorsement');delete answers.D01;
  assert.equal(scoreTraits('dark',answers).domains[0].mean,null);
+});
+test('Revised dark questions ask about the respondent while original wording stays available',()=>{
+ const original=assessmentItems('dark',LEGACY_DARK_VERSION);
+ assert.equal(DEFINITIONS.dark.items.length,28);assert.equal(original.length,28);
+ assert.equal(original[0].text,"It's not wise to let people know your secrets.");
+ assert.match(DEFINITIONS.dark.items[0].text,/^I /);
+ assert.ok(DEFINITIONS.dark.items.every((item,i)=>item.id===original[i].id&&item.text!==original[i].text));
 });
 test('Politics treats neutral as scored and context as missing, never equating missing with center',()=>{
  const neutral=Object.fromEntries(POLITICAL_ITEMS.map(q=>[q.id,3]));let r=scorePolitics(neutral);assert.equal(r.x,0);assert.equal(r.y,0);assert.equal(r.axis.x.coverage,1);

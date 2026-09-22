@@ -17,6 +17,8 @@ jobs:
         working-directory: native
       - run: npx cap add ios
         working-directory: native
+      - run: node version.mjs ios
+        working-directory: native
       - run: node icons.mjs ios
         working-directory: native
       - run: npx cap sync ios
