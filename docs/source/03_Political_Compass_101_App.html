@@ -1,0 +1,1127 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="light">
+  <meta name="theme-color" content="#17212b">
+  <title>Political Compass 101</title>
+  <style>
+    :root {
+      --ink: #17212b;
+      --ink-soft: #56616c;
+      --paper: #fffdf8;
+      --paper-2: #f5f1e8;
+      --line: #d8d1c3;
+      --coral: #d85c49;
+      --coral-dark: #aa3f31;
+      --teal: #247a75;
+      --teal-dark: #175954;
+      --gold: #d7aa49;
+      --focus: #1267c4;
+      --shadow: 0 20px 54px rgba(27, 35, 42, .12);
+      --radius: 22px;
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    * { box-sizing: border-box; }
+    html { min-height: 100%; background: var(--paper-2); }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 8% -5%, rgba(216, 92, 73, .12), transparent 28rem),
+        radial-gradient(circle at 92% 4%, rgba(36, 122, 117, .12), transparent 26rem),
+        var(--paper-2);
+      font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.45;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    button, input { font: inherit; }
+    button { color: inherit; }
+    button, .answer-option { -webkit-tap-highlight-color: transparent; }
+    button:focus-visible, input:focus-visible, summary:focus-visible {
+      outline: 3px solid color-mix(in srgb, var(--focus) 75%, white);
+      outline-offset: 3px;
+    }
+
+    .app-shell { min-height: 100vh; display: flex; flex-direction: column; }
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: min(1180px, calc(100% - 36px));
+      margin: 0 auto;
+      padding: 20px 0 8px;
+    }
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 11px;
+      border: 0;
+      background: transparent;
+      padding: 4px;
+      cursor: pointer;
+      font-weight: 800;
+      letter-spacing: -.02em;
+    }
+    .brand-mark {
+      width: 34px;
+      height: 34px;
+      border: 2px solid var(--ink);
+      border-radius: 10px;
+      position: relative;
+      background: linear-gradient(135deg, var(--coral) 0 49%, var(--paper) 49% 51%, var(--teal) 51%);
+      box-shadow: 3px 3px 0 var(--gold);
+    }
+    .brand-mark::before, .brand-mark::after {
+      content: "";
+      position: absolute;
+      background: var(--ink);
+      opacity: .75;
+    }
+    .brand-mark::before { width: 2px; top: 3px; bottom: 3px; left: 50%; }
+    .brand-mark::after { height: 2px; left: 3px; right: 3px; top: 50%; }
+    .version-chip {
+      color: var(--ink-soft);
+      font-size: .78rem;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    main { flex: 1; width: 100%; }
+    .view {
+      display: none;
+      width: min(1180px, calc(100% - 36px));
+      margin: 0 auto;
+      padding: 28px 0 64px;
+    }
+    .view.active { display: block; animation: view-in .34s cubic-bezier(.2, .8, .2, 1); }
+    @keyframes view-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+
+    .eyebrow {
+      margin: 0 0 14px;
+      color: var(--coral-dark);
+      font-size: .76rem;
+      font-weight: 850;
+      letter-spacing: .13em;
+      text-transform: uppercase;
+    }
+    h1, h2, h3, p { margin-top: 0; }
+    h1, .display-title {
+      margin-bottom: 18px;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(2.9rem, 8vw, 6.5rem);
+      font-weight: 500;
+      line-height: .93;
+      letter-spacing: -.055em;
+    }
+    h2 {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(2rem, 4.5vw, 3.5rem);
+      line-height: 1.03;
+      letter-spacing: -.035em;
+      font-weight: 500;
+    }
+    h3 { font-size: 1rem; letter-spacing: -.01em; }
+    .lede { max-width: 720px; color: #39434d; font-size: clamp(1.08rem, 2vw, 1.28rem); }
+    .muted { color: var(--ink-soft); }
+    .small { font-size: .85rem; }
+
+    .home-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.25fr) minmax(310px, .75fr);
+      gap: clamp(28px, 6vw, 76px);
+      align-items: center;
+      min-height: min(720px, calc(100vh - 120px));
+    }
+    .hero-copy { padding: 28px 0; }
+    .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin: 30px 0 18px; }
+    .trust-row { display: flex; flex-wrap: wrap; gap: 10px 18px; margin-top: 22px; }
+    .trust-item { display: inline-flex; align-items: center; gap: 8px; color: var(--ink-soft); font-size: .88rem; font-weight: 650; }
+    .trust-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--teal); box-shadow: 0 0 0 4px rgba(36, 122, 117, .12); }
+
+    .btn {
+      min-height: 50px;
+      border: 1px solid transparent;
+      border-radius: 999px;
+      padding: 0 22px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      cursor: pointer;
+      font-weight: 780;
+      transition: transform .18s ease, box-shadow .18s ease, background .18s ease, border-color .18s ease;
+    }
+    .btn:hover { transform: translateY(-2px); }
+    .btn:active { transform: translateY(0); }
+    .btn-primary { color: white; background: var(--ink); box-shadow: 0 10px 24px rgba(23, 33, 43, .20); }
+    .btn-primary:hover { background: #273543; }
+    .btn-secondary { background: rgba(255, 253, 248, .74); border-color: var(--line); }
+    .btn-secondary:hover { background: var(--paper); border-color: #b8ae9d; }
+    .btn-quiet { min-height: 42px; padding: 0 14px; background: transparent; border-color: transparent; color: var(--ink-soft); }
+    .btn-danger { color: #8f2f25; background: #fff2ef; border-color: #efc6c0; }
+    .btn[disabled] { opacity: .45; cursor: not-allowed; transform: none; box-shadow: none; }
+    .arrow { font-size: 1.2em; line-height: 1; }
+
+    .hero-visual {
+      background: rgba(255, 253, 248, .82);
+      border: 1px solid var(--line);
+      border-radius: 30px;
+      padding: clamp(22px, 4vw, 38px);
+      box-shadow: var(--shadow);
+      transform: rotate(1.2deg);
+    }
+    .hero-visual .compass { transform: rotate(-1.2deg); }
+    .axis-key { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 22px; transform: rotate(-1.2deg); }
+    .axis-key > div { border-top: 1px solid var(--line); padding-top: 10px; }
+    .axis-key strong { display: block; font-size: .82rem; }
+    .axis-key span { color: var(--ink-soft); font-size: .76rem; }
+
+    .compass-wrap { width: 100%; }
+    .compass {
+      --point-x: 50%;
+      --point-y: 50%;
+      width: 100%;
+      aspect-ratio: 1;
+      position: relative;
+      overflow: hidden;
+      border: 2px solid var(--ink);
+      border-radius: 17px;
+      background:
+        linear-gradient(to right, transparent calc(50% - 1px), rgba(23, 33, 43, .72) calc(50% - 1px), rgba(23, 33, 43, .72) calc(50% + 1px), transparent calc(50% + 1px)),
+        linear-gradient(to bottom, transparent calc(50% - 1px), rgba(23, 33, 43, .72) calc(50% - 1px), rgba(23, 33, 43, .72) calc(50% + 1px), transparent calc(50% + 1px)),
+        repeating-linear-gradient(to right, transparent 0 calc(10% - 1px), rgba(23, 33, 43, .08) calc(10% - 1px) 10%),
+        repeating-linear-gradient(to bottom, transparent 0 calc(10% - 1px), rgba(23, 33, 43, .08) calc(10% - 1px) 10%),
+        conic-gradient(from 90deg at 50% 50%, #e5f2ef 0 25%, #f8e5dd 0 50%, #f2ebd2 0 75%, #e6e4ef 0);
+    }
+    .quadrant-label {
+      position: absolute;
+      max-width: 43%;
+      color: rgba(23, 33, 43, .63);
+      font-size: clamp(.57rem, 1.7vw, .76rem);
+      font-weight: 800;
+      line-height: 1.18;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+    }
+    .ql-tl { top: 8%; left: 7%; }
+    .ql-tr { top: 8%; right: 7%; text-align: right; }
+    .ql-bl { bottom: 8%; left: 7%; }
+    .ql-br { bottom: 8%; right: 7%; text-align: right; }
+    .compass-point {
+      position: absolute;
+      z-index: 4;
+      left: var(--point-x);
+      top: var(--point-y);
+      width: 20px;
+      height: 20px;
+      margin: -10px 0 0 -10px;
+      border: 3px solid white;
+      border-radius: 50%;
+      background: var(--ink);
+      box-shadow: 0 0 0 2px var(--ink), 0 6px 15px rgba(23, 33, 43, .3);
+      transition: left .38s cubic-bezier(.2, .8, .2, 1), top .38s cubic-bezier(.2, .8, .2, 1);
+    }
+    .compass-point.pulse { animation: point-pulse .45s ease; }
+    @keyframes point-pulse { 50% { transform: scale(1.3); } }
+    .graph-readout { display: flex; justify-content: space-between; gap: 12px; margin-top: 12px; color: var(--ink-soft); font-size: .8rem; }
+    .graph-readout strong { color: var(--ink); }
+
+    .resume-card, .notice-card {
+      max-width: 710px;
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-top: 20px;
+      padding: 14px 16px;
+      border: 1px solid #b9d7d3;
+      border-radius: 16px;
+      background: #eff9f7;
+    }
+    .resume-card.visible, .notice-card.visible { display: flex; }
+
+    .section-head { display: flex; justify-content: space-between; align-items: end; gap: 20px; margin-bottom: 28px; }
+    .section-head h2 { margin-bottom: 6px; }
+    .panel {
+      background: rgba(255, 253, 248, .92);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: 0 16px 45px rgba(27, 35, 42, .08);
+    }
+
+    .setup-card { max-width: 760px; margin: 25px auto 0; padding: clamp(24px, 5vw, 50px); }
+    .setup-card h2 { margin-bottom: 12px; }
+    .field { margin: 28px 0; }
+    .field label { display: block; margin-bottom: 9px; font-weight: 760; }
+    .field input {
+      width: 100%;
+      min-height: 54px;
+      border: 1px solid #bdb4a5;
+      border-radius: 13px;
+      padding: 0 15px;
+      color: var(--ink);
+      background: white;
+    }
+    .switch-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 22px;
+      padding: 18px 0;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+    .switch-copy strong { display: block; margin-bottom: 3px; }
+    .switch {
+      flex: 0 0 auto;
+      width: 56px;
+      height: 32px;
+      border: 0;
+      border-radius: 999px;
+      padding: 3px;
+      background: #aeb4b8;
+      cursor: pointer;
+      transition: background .2s ease;
+    }
+    .switch::after {
+      content: "";
+      display: block;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: white;
+      box-shadow: 0 2px 7px rgba(0, 0, 0, .22);
+      transition: transform .25s cubic-bezier(.2, .8, .2, 1);
+    }
+    .switch[aria-checked="true"] { background: var(--teal); }
+    .switch[aria-checked="true"]::after { transform: translateX(24px); }
+    .setup-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 28px; }
+
+    .test-top {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      gap: 18px;
+      margin-bottom: 24px;
+    }
+    .progress-meta { display: flex; justify-content: space-between; gap: 12px; color: var(--ink-soft); font-size: .82rem; font-weight: 720; }
+    .progress-track { height: 8px; margin-top: 7px; border-radius: 999px; background: #ddd7cb; overflow: hidden; }
+    .progress-fill { height: 100%; width: 0; border-radius: inherit; background: linear-gradient(90deg, var(--coral), var(--gold)); transition: width .28s ease; }
+    .test-grid { display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(285px, .55fr); gap: 24px; align-items: start; }
+    .question-panel { min-height: 570px; padding: clamp(24px, 4vw, 46px); display: flex; flex-direction: column; }
+    .question-kicker { display: flex; align-items: center; justify-content: space-between; gap: 10px; color: var(--ink-soft); font-size: .78rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+    .question-text { margin: clamp(28px, 6vh, 58px) 0 34px; font-family: Georgia, "Times New Roman", serif; font-size: clamp(1.55rem, 3.4vw, 2.55rem); line-height: 1.18; letter-spacing: -.025em; }
+    .answers { display: grid; gap: 10px; margin-top: auto; }
+    .answer-option {
+      min-height: 54px;
+      border: 1px solid #c9c1b4;
+      border-radius: 14px;
+      padding: 10px 14px;
+      display: grid;
+      grid-template-columns: 28px 1fr auto;
+      align-items: center;
+      gap: 12px;
+      background: white;
+      cursor: pointer;
+      text-align: left;
+      font-weight: 700;
+      transition: background .18s ease, border-color .18s ease, transform .18s ease, box-shadow .18s ease;
+    }
+    .answer-option:hover { transform: translateX(3px); border-color: #8f887e; }
+    .answer-option.selected { border-color: var(--teal); background: #edf8f6; box-shadow: 0 0 0 2px rgba(36, 122, 117, .18); }
+    .answer-radio { width: 21px; height: 21px; border: 2px solid #9c968c; border-radius: 50%; position: relative; }
+    .selected .answer-radio { border-color: var(--teal); }
+    .selected .answer-radio::after { content: ""; position: absolute; inset: 4px; border-radius: 50%; background: var(--teal); }
+    .key-hint { color: #838b91; font-size: .74rem; font-weight: 800; }
+    .question-nav { display: flex; justify-content: space-between; gap: 12px; margin-top: 18px; }
+    .question-nav .btn { min-width: 126px; }
+    .live-panel { padding: 20px; position: sticky; top: 18px; }
+    .live-panel.hidden { display: none; }
+    .live-panel h3 { margin-bottom: 5px; }
+    .provisional-chip { display: inline-block; margin-bottom: 14px; padding: 4px 8px; border-radius: 999px; color: #754e08; background: #fff1ca; font-size: .7rem; font-weight: 850; letter-spacing: .06em; text-transform: uppercase; }
+    .live-switch-line { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .live-switch-line .switch { transform: scale(.82); transform-origin: right center; }
+
+    .result-hero { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(300px, .8fr); gap: clamp(28px, 5vw, 64px); align-items: center; }
+    .result-copy { padding: 22px 0; }
+    .result-copy h2 { margin-bottom: 12px; }
+    .result-title { color: var(--teal-dark); font-size: clamp(1.2rem, 2vw, 1.55rem); font-weight: 800; }
+    .score-pills { display: flex; flex-wrap: wrap; gap: 10px; margin: 25px 0; }
+    .score-pill { border: 1px solid var(--line); border-radius: 14px; padding: 10px 13px; background: var(--paper); }
+    .score-pill span { display: block; color: var(--ink-soft); font-size: .72rem; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; }
+    .score-pill strong { font-size: 1.18rem; }
+    .result-graph-card { padding: clamp(20px, 4vw, 34px); }
+    .result-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 24px; }
+    .facet-section { margin-top: 52px; }
+    .facet-section h3 { margin-bottom: 6px; font-family: Georgia, "Times New Roman", serif; font-size: 1.65rem; font-weight: 500; }
+    .facet-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 20px; }
+    .facet-card { padding: 17px; background: rgba(255, 253, 248, .82); border: 1px solid var(--line); border-radius: 15px; }
+    .facet-head { display: flex; justify-content: space-between; gap: 12px; font-size: .87rem; font-weight: 760; }
+    .facet-track { height: 10px; margin: 14px 0 8px; border-radius: 999px; position: relative; background: linear-gradient(90deg, #c8e5e1, #e9e4da 49%, #e9e4da 51%, #f2c9bf); }
+    .facet-track::after { content: ""; position: absolute; left: 50%; top: -3px; width: 1px; height: 16px; background: #5f666b; }
+    .facet-marker { position: absolute; top: 50%; left: 50%; width: 15px; height: 15px; transform: translate(-50%, -50%); border: 2px solid white; border-radius: 50%; background: var(--ink); box-shadow: 0 0 0 1px var(--ink); }
+    .facet-labels { display: flex; justify-content: space-between; gap: 10px; color: var(--ink-soft); font-size: .68rem; }
+    .quality-note { margin-top: 25px; padding: 18px; border-left: 4px solid var(--gold); background: #fff9e8; border-radius: 0 12px 12px 0; }
+
+    .attempt-list { display: grid; gap: 13px; }
+    .empty-state { text-align: center; padding: clamp(44px, 9vw, 90px) 22px; }
+    .empty-state .empty-mark { width: 58px; height: 58px; margin: 0 auto 18px; border: 2px solid var(--line); border-radius: 18px; display: grid; place-items: center; color: var(--teal); font-size: 1.6rem; }
+    .attempt-card { display: grid; grid-template-columns: 68px minmax(0, 1fr) auto; align-items: center; gap: 16px; padding: 13px 15px; }
+    .mini-compass { width: 60px; height: 60px; border: 1px solid var(--ink); border-radius: 10px; position: relative; background: linear-gradient(to right, transparent 49%, rgba(23,33,43,.42) 49% 51%, transparent 51%), linear-gradient(to bottom, transparent 49%, rgba(23,33,43,.42) 49% 51%, transparent 51%), #f3efe7; }
+    .mini-point { position: absolute; width: 10px; height: 10px; margin: -5px 0 0 -5px; border: 2px solid white; border-radius: 50%; background: var(--coral); box-shadow: 0 0 0 1px var(--ink); }
+    .attempt-title { font-weight: 820; }
+    .attempt-meta { color: var(--ink-soft); font-size: .8rem; }
+    .attempt-actions { display: flex; gap: 5px; }
+    .detail-grid { display: grid; grid-template-columns: minmax(280px, .65fr) minmax(0, 1.35fr); gap: 25px; align-items: start; }
+    .detail-graph { padding: 22px; position: sticky; top: 18px; }
+    .detail-info { padding: clamp(20px, 4vw, 35px); }
+    .answer-review { margin-top: 25px; }
+    details { border-top: 1px solid var(--line); }
+    details:last-child { border-bottom: 1px solid var(--line); }
+    summary { padding: 16px 4px; cursor: pointer; font-weight: 780; }
+    .answer-row { display: grid; grid-template-columns: 58px 1fr minmax(130px, auto); gap: 12px; padding: 12px 4px; border-top: 1px solid #ebe5da; font-size: .83rem; }
+    .answer-row .answer-value { color: var(--teal-dark); font-weight: 780; text-align: right; }
+
+    .method-details { max-width: 760px; margin-top: 26px; border: 0; }
+    .method-details summary { display: inline-flex; align-items: center; gap: 8px; padding: 0; color: var(--teal-dark); }
+    .method-copy { margin-top: 14px; padding: 18px; border: 1px solid var(--line); border-radius: 14px; background: rgba(255, 253, 248, .76); color: var(--ink-soft); font-size: .89rem; }
+    .method-copy strong { color: var(--ink); }
+
+    footer { width: min(1180px, calc(100% - 36px)); margin: 0 auto; padding: 20px 0 calc(26px + var(--safe-bottom)); border-top: 1px solid rgba(23, 33, 43, .14); display: flex; justify-content: space-between; gap: 20px; color: var(--ink-soft); font-size: .76rem; }
+    .sr-only { position: absolute !important; width: 1px !important; height: 1px !important; padding: 0 !important; margin: -1px !important; overflow: hidden !important; clip: rect(0, 0, 0, 0) !important; white-space: nowrap !important; border: 0 !important; }
+
+    @media (max-width: 850px) {
+      .home-grid, .result-hero, .detail-grid { grid-template-columns: 1fr; }
+      .home-grid { min-height: auto; }
+      .hero-visual { max-width: 510px; margin: 0 auto; }
+      .test-grid { grid-template-columns: 1fr; }
+      .live-panel { position: static; max-width: 520px; width: 100%; margin: 0 auto; }
+      .detail-graph { position: static; max-width: 430px; width: 100%; margin: 0 auto; }
+    }
+
+    @media (max-width: 620px) {
+      .topbar, .view, footer { width: min(100% - 24px, 1180px); }
+      .topbar { padding-top: 13px; }
+      .version-chip { display: none; }
+      .view { padding-top: 18px; padding-bottom: 44px; }
+      .display-title, h1 { font-size: clamp(3rem, 16vw, 4.4rem); }
+      .hero-actions, .setup-actions, .result-actions { display: grid; grid-template-columns: 1fr; }
+      .hero-actions .btn, .setup-actions .btn, .result-actions .btn { width: 100%; }
+      .axis-key { grid-template-columns: 1fr; }
+      .test-top { grid-template-columns: auto 1fr; }
+      .test-top .live-switch-line { grid-column: 1 / -1; justify-content: flex-end; }
+      .question-panel { min-height: 600px; padding: 22px 16px; }
+      .question-text { margin-top: 26px; font-size: clamp(1.45rem, 7vw, 2rem); }
+      .answer-option { grid-template-columns: 25px 1fr; }
+      .key-hint { display: none; }
+      .question-nav { position: sticky; bottom: 0; z-index: 8; margin: 16px -16px -22px; padding: 12px 16px calc(12px + var(--safe-bottom)); background: rgba(255, 253, 248, .96); border-top: 1px solid var(--line); backdrop-filter: blur(10px); }
+      .question-nav .btn { min-width: 0; flex: 1; }
+      .facet-grid { grid-template-columns: 1fr; }
+      .section-head { align-items: start; flex-direction: column; }
+      .attempt-card { grid-template-columns: 54px minmax(0, 1fr); }
+      .mini-compass { width: 50px; height: 50px; }
+      .attempt-actions { grid-column: 1 / -1; justify-content: flex-end; border-top: 1px solid var(--line); padding-top: 9px; }
+      .answer-row { grid-template-columns: 48px 1fr; }
+      .answer-row .answer-value { grid-column: 2; text-align: left; }
+      footer { flex-direction: column; }
+    }
+
+    @media print {
+      body { background: white; }
+      .topbar, footer, .result-actions, .facet-section .muted { display: none !important; }
+      .view { display: none !important; width: 100%; padding: 0; }
+      #resultView.active, #attemptDetailView.active { display: block !important; }
+      .panel { box-shadow: none; }
+      .result-hero, .detail-grid { grid-template-columns: 1fr 1fr; }
+      .facet-grid { grid-template-columns: 1fr 1fr; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; transition-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <button class="brand" id="brandHome" type="button" aria-label="Go to main menu">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span>Political Compass 101</span>
+      </button>
+      <span class="version-chip">Transparent scoring / v1.0</span>
+    </header>
+
+    <main>
+      <section class="view active" id="homeView" aria-labelledby="homeTitle">
+        <div class="home-grid">
+          <div class="hero-copy">
+            <p class="eyebrow">A 101-item political values assessment</p>
+            <h1 id="homeTitle">Map your views.<br>Keep the nuance.</h1>
+            <p class="lede">A balanced two-axis test built from single-claim statements, mixed wording directions, explicit tradeoffs, and a scoring key you can inspect.</p>
+            <div class="hero-actions">
+              <button class="btn btn-primary" id="startButton" type="button">Start test <span class="arrow" aria-hidden="true">&rarr;</span></button>
+              <button class="btn btn-secondary" id="reviewButton" type="button">Review past attempts</button>
+            </div>
+            <div class="resume-card" id="resumeCard">
+              <div><strong>Unfinished attempt</strong><div class="small muted" id="resumeText"></div></div>
+              <button class="btn btn-secondary" id="resumeButton" type="button">Resume</button>
+            </div>
+            <div class="notice-card" id="storageNotice" role="status">
+              <div><strong>Private storage is unavailable</strong><div class="small muted">This session will work, but attempts may not remain after the page closes.</div></div>
+            </div>
+            <div class="trust-row" aria-label="Assessment features">
+              <span class="trust-item"><span class="trust-dot"></span>12 issue facets</span>
+              <span class="trust-item"><span class="trust-dot"></span>Balanced keying</span>
+              <span class="trust-item"><span class="trust-dot"></span>Saved on this device</span>
+            </div>
+            <details class="method-details">
+              <summary>About the model <span aria-hidden="true">+</span></summary>
+              <div class="method-copy">
+                <strong>This is a transparent model, not a diagnosis.</strong> The horizontal axis runs from public coordination to market coordination. The vertical axis runs from civic autonomy to institutional authority. Items have documented coefficient magnitudes and some cross-load across axes. The instrument has not been normed on a representative population, so it should not be used to assign party identity, predict a vote, or make high-stakes decisions.
+              </div>
+            </details>
+          </div>
+
+          <aside class="hero-visual" aria-label="Preview of the two-axis graph">
+            <div class="compass" role="img" aria-label="Political compass preview at the center">
+              <span class="quadrant-label ql-tl">Public<br>Authority</span>
+              <span class="quadrant-label ql-tr">Market<br>Authority</span>
+              <span class="quadrant-label ql-bl">Public<br>Autonomy</span>
+              <span class="quadrant-label ql-br">Market<br>Autonomy</span>
+              <span class="compass-point" aria-hidden="true"></span>
+            </div>
+            <div class="axis-key">
+              <div><strong>Economic coordination</strong><span>Public &larr; X &rarr; Market</span></div>
+              <div><strong>Civic power</strong><span>Autonomy &larr; Y &rarr; Authority</span></div>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <section class="view" id="setupView" aria-labelledby="setupTitle">
+        <div class="setup-card panel">
+          <p class="eyebrow">Before you begin</p>
+          <h2 id="setupTitle">Set up this attempt</h2>
+          <p class="muted">Answer based on the policy you would generally support, not what you think a party or public figure expects. Allow about 15-20 minutes.</p>
+          <div class="field">
+            <label for="attemptLabel">Attempt label <span class="muted small">(optional)</span></label>
+            <input id="attemptLabel" maxlength="48" autocomplete="off" placeholder="For example: Alex, first try, classroom group A">
+          </div>
+          <div class="switch-row">
+            <div class="switch-copy"><strong>Show live placement</strong><span class="small muted">Display a provisional point that updates after each selected answer.</span></div>
+            <button class="switch" id="setupLiveToggle" type="button" role="switch" aria-checked="true" aria-label="Show live placement"></button>
+          </div>
+          <p class="small muted" style="margin: 18px 0 0;">All 101 questions are required. Neutral contributes zero. Your answers stay in this browser unless you clear them.</p>
+          <div class="setup-actions">
+            <button class="btn btn-secondary" id="cancelSetup" type="button">Back</button>
+            <button class="btn btn-primary" id="beginButton" type="button">Begin question 1 <span class="arrow" aria-hidden="true">&rarr;</span></button>
+          </div>
+        </div>
+      </section>
+
+      <section class="view" id="testView" aria-labelledby="questionText">
+        <div class="test-top">
+          <button class="btn btn-quiet" id="exitTest" type="button">&larr; Menu</button>
+          <div>
+            <div class="progress-meta"><span id="progressText">Question 1 of 101</span><span id="progressPercent">0%</span></div>
+            <div class="progress-track" aria-hidden="true"><div class="progress-fill" id="progressFill"></div></div>
+          </div>
+          <div class="live-switch-line">
+            <span class="small muted">Live point</span>
+            <button class="switch" id="testLiveToggle" type="button" role="switch" aria-checked="true" aria-label="Show live placement"></button>
+          </div>
+        </div>
+
+        <div class="test-grid">
+          <div>
+            <article class="question-panel panel">
+              <div class="question-kicker"><span id="questionStableId">Q001</span><span>Select one response</span></div>
+              <h2 class="question-text" id="questionText"></h2>
+              <div class="answers" id="answerOptions" role="radiogroup" aria-labelledby="questionText"></div>
+              <div class="question-nav">
+                <button class="btn btn-secondary" id="backQuestion" type="button">Back</button>
+                <button class="btn btn-primary" id="nextQuestion" type="button" disabled>Next question <span class="arrow" aria-hidden="true">&rarr;</span></button>
+              </div>
+            </article>
+          </div>
+
+          <aside class="live-panel panel" id="livePanel">
+            <span class="provisional-chip">Provisional</span>
+            <h3>Current placement</h3>
+            <p class="small muted">Early answers are gently pulled toward the center; the estimate becomes fully weighted at completion.</p>
+            <div class="compass" id="liveCompass" role="img" aria-label="Current provisional placement">
+              <span class="quadrant-label ql-tl">Public<br>Authority</span>
+              <span class="quadrant-label ql-tr">Market<br>Authority</span>
+              <span class="quadrant-label ql-bl">Public<br>Autonomy</span>
+              <span class="quadrant-label ql-br">Market<br>Autonomy</span>
+              <span class="compass-point" aria-hidden="true"></span>
+            </div>
+            <div class="graph-readout"><span>X <strong id="liveX">0.0</strong></span><span>Y <strong id="liveY">0.0</strong></span></div>
+          </aside>
+        </div>
+      </section>
+
+      <section class="view" id="resultView" aria-labelledby="resultHeading">
+        <div class="result-hero">
+          <div class="result-copy">
+            <p class="eyebrow">Assessment complete</p>
+            <h2 id="resultHeading">Your two-axis placement</h2>
+            <p class="result-title" id="resultTitle"></p>
+            <p class="lede" id="resultDescription"></p>
+            <div class="score-pills">
+              <div class="score-pill"><span>Economic X</span><strong id="resultX">0.0</strong></div>
+              <div class="score-pill"><span>Civic Y</span><strong id="resultY">0.0</strong></div>
+              <div class="score-pill"><span>Cross-item coherence</span><strong id="resultCoherence">--</strong></div>
+            </div>
+            <div class="result-actions">
+              <button class="btn btn-primary" id="reviewSavedButton" type="button">Review saved attempts</button>
+              <button class="btn btn-secondary" id="printResult" type="button">Print result</button>
+              <button class="btn btn-secondary" id="retakeButton" type="button">Start another</button>
+            </div>
+          </div>
+          <div class="result-graph-card panel">
+            <div class="compass" id="resultCompass" role="img" aria-label="Final placement">
+              <span class="quadrant-label ql-tl">Public<br>Authority</span>
+              <span class="quadrant-label ql-tr">Market<br>Authority</span>
+              <span class="quadrant-label ql-bl">Public<br>Autonomy</span>
+              <span class="quadrant-label ql-br">Market<br>Autonomy</span>
+              <span class="compass-point" aria-hidden="true"></span>
+            </div>
+            <div class="graph-readout"><span>Public &larr; Economic &rarr; Market</span><span>Autonomy &larr; Civic &rarr; Authority</span></div>
+          </div>
+        </div>
+        <section class="facet-section" aria-labelledby="facetHeading">
+          <h3 id="facetHeading">Facet profile</h3>
+          <p class="muted">The same overall point can come from different combinations of views. These twelve facet scores preserve some of that detail.</p>
+          <div class="facet-grid" id="facetGrid"></div>
+          <div class="quality-note" id="qualityNote"></div>
+        </section>
+      </section>
+
+      <section class="view" id="attemptsView" aria-labelledby="attemptsHeading">
+        <div class="section-head">
+          <div><p class="eyebrow">Stored on this device</p><h2 id="attemptsHeading">Past attempts</h2><p class="muted">Compare placements or open an attempt to review every answer.</p></div>
+          <button class="btn btn-secondary" id="attemptsHome" type="button">Back to menu</button>
+        </div>
+        <div class="attempt-list" id="attemptList"></div>
+      </section>
+
+      <section class="view" id="attemptDetailView" aria-labelledby="detailHeading">
+        <div class="section-head">
+          <div><p class="eyebrow">Saved attempt</p><h2 id="detailHeading">Attempt details</h2><p class="muted" id="detailDate"></p></div>
+          <button class="btn btn-secondary" id="detailBack" type="button">Back to attempts</button>
+        </div>
+        <div class="detail-grid">
+          <aside class="detail-graph panel">
+            <div class="compass" id="detailCompass" role="img" aria-label="Saved placement">
+              <span class="quadrant-label ql-tl">Public<br>Authority</span>
+              <span class="quadrant-label ql-tr">Market<br>Authority</span>
+              <span class="quadrant-label ql-bl">Public<br>Autonomy</span>
+              <span class="quadrant-label ql-br">Market<br>Autonomy</span>
+              <span class="compass-point" aria-hidden="true"></span>
+            </div>
+            <div class="graph-readout"><span>X <strong id="detailX">0.0</strong></span><span>Y <strong id="detailY">0.0</strong></span></div>
+          </aside>
+          <article class="detail-info panel">
+            <h3 id="detailPlacement" style="font-size: 1.35rem;"></h3>
+            <div class="score-pills" id="detailPills"></div>
+            <div class="facet-grid" id="detailFacets"></div>
+            <div class="answer-review">
+              <details>
+                <summary>Review all 101 answers</summary>
+                <div id="detailAnswers"></div>
+              </details>
+            </div>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <span>Political Compass 101 / Version 1.0 / August 2026</span>
+      <span>Descriptive and unnormed. Do not use for diagnosis or high-stakes decisions.</span>
+    </footer>
+    <div class="sr-only" id="announcer" aria-live="polite"></div>
+  </div>
+
+  <script>
+    "use strict";
+
+    const ITEMS = [{"key":"E1a","text":"Essential network utilities, such as water or electricity, should usually be publicly owned.","x":-1.5,"y":0.0,"facet":"E1","tier":"Anchor","paired_with":"E1b","id":"Q001"},{"key":"A1a","text":"Government should not punish peaceful speech merely because many people find it offensive.","x":0.0,"y":-1.5,"facet":"A1","tier":"Anchor","paired_with":"A1b","id":"Q002"},{"key":"E2a","text":"Higher-income households should pay a larger percentage of their income in taxes than middle-income households.","x":-1.5,"y":0.0,"facet":"E2","tier":"Anchor","paired_with":"E2b","id":"Q003"},{"key":"A2a","text":"Except in an immediate danger, police should need a judicial warrant to access a person's private digital messages.","x":0.0,"y":-1.5,"facet":"A2","tier":"Anchor","paired_with":"A2b","id":"Q004"},{"key":"E3a","text":"Employees should be able to form a union without interference from their employer.","x":-1.25,"y":0.0,"facet":"E3","tier":"Standard","paired_with":"E3b","id":"Q005"},{"key":"A3a","text":"Adults should generally be free to make personal choices unless those choices directly harm another person.","x":0.0,"y":-1.5,"facet":"A3","tier":"Anchor","paired_with":"A3b","id":"Q006"},{"key":"E4a","text":"A universal public health-insurance plan should guarantee a core package of care to everyone.","x":-1.5,"y":0.0,"facet":"E4","tier":"Anchor","paired_with":"E4b","id":"Q007"},{"key":"A4a","text":"An executive leader should need legislative authorization to continue emergency powers beyond a short initial period.","x":0.0,"y":-1.5,"facet":"A4","tier":"Anchor","paired_with":"A4b","id":"Q008"},{"key":"E5a","text":"Environmental rules should require firms to bear measurable costs that their activity imposes on the public.","x":-1.25,"y":0.0,"facet":"E5","tier":"Standard","paired_with":"E5d","id":"Q009"},{"key":"A5a","text":"Public decisions should be made at the lowest level of government that can manage their consequences.","x":0.0,"y":-1.25,"facet":"A5","tier":"Standard","paired_with":"A5b","id":"Q010"},{"key":"E6a","text":"Free-trade agreements should generally be favored even when some domestic industries become smaller.","x":1.25,"y":0.0,"facet":"E6","tier":"Standard","paired_with":"E6b","id":"Q011"},{"key":"A6a","text":"Government should need prompt judicial review before placing a citizen under a security-based travel restriction.","x":0.0,"y":-1.25,"facet":"A6","tier":"Standard","paired_with":"A6b","id":"Q012"},{"key":"E3b","text":"Employers and individual workers should generally be free to negotiate terms without sector-wide bargaining requirements.","x":1.25,"y":0.0,"facet":"E3","tier":"Standard","paired_with":"E3a","id":"Q013"},{"key":"A2b","text":"Broad monitoring of public communications is acceptable for preventing terrorism when a secret court provides oversight.","x":0.0,"y":1.25,"facet":"A2","tier":"Standard","paired_with":"A2a","id":"Q014"},{"key":"E2b","text":"Taxes should be low and broadly uniform even if this results in less redistribution.","x":1.5,"y":0.0,"facet":"E2","tier":"Anchor","paired_with":"E2a","id":"Q015"},{"key":"A1b","text":"Speech that seriously undermines social cohesion may be restricted even when it does not directly threaten violence.","x":0.0,"y":1.5,"facet":"A1","tier":"Anchor","paired_with":"A1a","id":"Q016"},{"key":"E1b","text":"Privately owned firms should remain the normal form of ownership in most industries where meaningful competition is possible.","x":1.5,"y":0.0,"facet":"E1","tier":"Anchor","paired_with":"E1a","id":"Q017"},{"key":"X1","text":"An employer should be barred from firing a worker for lawful political activity outside work unless the activity materially affects the job.","x":-0.5,"y":-1.0,"facet":"X","tier":"Cross-axis","paired_with":null,"id":"Q018"},{"key":"A6b","text":"Citizenship may be revoked from a dual national who is convicted of a serious terrorism offense.","x":0.0,"y":1.25,"facet":"A6","tier":"Standard","paired_with":"A6a","id":"Q019"},{"key":"E6b","text":"Government should favor domestic suppliers in order to preserve industries it considers strategically important.","x":-1.0,"y":0.25,"facet":"E6","tier":"Supporting","paired_with":"E6a","id":"Q020"},{"key":"A5b","text":"National government should be able to override local rules in order to maintain uniform standards across the country.","x":0.0,"y":1.25,"facet":"A5","tier":"Standard","paired_with":"A5a","id":"Q021"},{"key":"E5b","text":"When either approach can meet the same environmental target, pricing pollution is preferable to prescribing production methods.","x":1.0,"y":0.0,"facet":"E5","tier":"Supporting","paired_with":null,"id":"Q022"},{"key":"A4b","text":"During a prolonged crisis, decisive executive action can be more important than obtaining advance legislative approval.","x":0.0,"y":1.5,"facet":"A4","tier":"Anchor","paired_with":"A4a","id":"Q023"},{"key":"E4b","text":"Competition among private insurers should be the main organizing principle for health coverage.","x":1.5,"y":0.0,"facet":"E4","tier":"Anchor","paired_with":"E4a","id":"Q024"},{"key":"A3b","text":"Government may restrict adult conduct judged seriously immoral even when direct harm to another person has not been shown.","x":0.0,"y":1.5,"facet":"A3","tier":"Anchor","paired_with":"A3a","id":"Q025"},{"key":"E6c","text":"Capital gains should be taxed at a lower rate than wages in order to encourage investment.","x":1.25,"y":0.0,"facet":"E6","tier":"Standard","paired_with":null,"id":"Q026"},{"key":"A6c","text":"Military service should remain voluntary except when the country faces a direct threat to its survival.","x":0.0,"y":-1.25,"facet":"A6","tier":"Standard","paired_with":null,"id":"Q027"},{"key":"E1c","text":"Employee-owned enterprises should receive limited tax advantages over otherwise similar investor-owned firms.","x":-1.0,"y":0.0,"facet":"E1","tier":"Supporting","paired_with":null,"id":"Q028"},{"key":"A1c","text":"People should be allowed to publish political arguments anonymously.","x":0.0,"y":-1.25,"facet":"A1","tier":"Standard","paired_with":null,"id":"Q029"},{"key":"E2c","text":"A tax on very large inheritances is a legitimate way to limit the concentration of wealth across generations.","x":-1.25,"y":0.0,"facet":"E2","tier":"Standard","paired_with":null,"id":"Q030"},{"key":"A2c","text":"Evidence obtained through a serious illegal search should generally be excluded from a criminal trial even when it indicates guilt.","x":0.0,"y":-1.25,"facet":"A2","tier":"Standard","paired_with":null,"id":"Q031"},{"key":"E3c","text":"A statutory minimum wage should be high enough to support a basic standard of living even if some low-wage jobs disappear.","x":-1.5,"y":0.0,"facet":"E3","tier":"Anchor","paired_with":null,"id":"Q032"},{"key":"A3c","text":"Same-sex couples should have the same access to civil marriage as opposite-sex couples.","x":0.0,"y":-1.25,"facet":"A3","tier":"Standard","paired_with":null,"id":"Q033"},{"key":"E4c","text":"Public funding for primary and secondary education should be used to reduce large quality gaps between neighborhoods.","x":-1.25,"y":0.0,"facet":"E4","tier":"Standard","paired_with":null,"id":"Q034"},{"key":"A4c","text":"Courts should be able to invalidate laws that violate constitutional rights even when those laws were approved by an elected majority.","x":0.0,"y":-1.25,"facet":"A4","tier":"Standard","paired_with":null,"id":"Q035"},{"key":"E5c","text":"Regulators may restrict a new product when credible evidence points to severe harm even though uncertainty remains.","x":-1.0,"y":0.25,"facet":"E5","tier":"Supporting","paired_with":null,"id":"Q036"},{"key":"X2","text":"A dominant digital platform should be required to give users a clear appeal process when it removes political speech.","x":-0.75,"y":-0.75,"facet":"X","tier":"Cross-axis","paired_with":null,"id":"Q037"},{"key":"A5c","text":"Citizens should be able to place a proposal on a binding referendum after meeting a substantial signature requirement.","x":0.0,"y":-1.0,"facet":"A5","tier":"Supporting","paired_with":null,"id":"Q038"},{"key":"E2d","text":"People should generally be free to transfer accumulated wealth to their heirs without a special inheritance tax.","x":1.25,"y":0.0,"facet":"E2","tier":"Standard","paired_with":null,"id":"Q039"},{"key":"A1d","text":"Organizers of large public demonstrations should need prior government permission rather than merely give notice.","x":0.0,"y":1.25,"facet":"A1","tier":"Standard","paired_with":null,"id":"Q040"},{"key":"E1d","text":"Government should be allowed to create a public enterprise when a private market repeatedly fails to provide an essential service.","x":-1.25,"y":0.0,"facet":"E1","tier":"Standard","paired_with":null,"id":"Q041"},{"key":"A6d","text":"Most young adults should be required to complete a period of military or civilian national service.","x":0.0,"y":1.25,"facet":"A6","tier":"Standard","paired_with":null,"id":"Q042"},{"key":"E6d","text":"A public development bank should finance socially useful projects that private investors consider too risky.","x":-1.25,"y":0.0,"facet":"E6","tier":"Standard","paired_with":null,"id":"Q043"},{"key":"A5d","text":"Elected representatives should make final policy choices rather than rely frequently on referendums.","x":0.0,"y":1.0,"facet":"A5","tier":"Supporting","paired_with":null,"id":"Q044"},{"key":"E5d","text":"Firms should be free to sell a legal product unless regulators can demonstrate that it is likely to cause significant harm.","x":1.25,"y":-0.25,"facet":"E5","tier":"Standard","paired_with":"E5a","id":"Q045"},{"key":"A4d","text":"Except where constitutional text is explicit, elected majorities should be able to implement policy without judges overturning it.","x":0.0,"y":1.25,"facet":"A4","tier":"Standard","paired_with":null,"id":"Q046"},{"key":"E4d","text":"Families should be able to direct public education funding to an approved private school of their choice.","x":1.0,"y":-0.25,"facet":"E4","tier":"Supporting","paired_with":null,"id":"Q047"},{"key":"A3d","text":"A court should be able to authorize lifesaving treatment for a competent adult who refuses it when death is otherwise imminent.","x":0.0,"y":1.25,"facet":"A3","tier":"Standard","paired_with":null,"id":"Q048"},{"key":"E3d","text":"Legal wage floors should mainly reflect local labor-market conditions rather than a uniform national standard.","x":1.0,"y":0.0,"facet":"E3","tier":"Supporting","paired_with":null,"id":"Q049"},{"key":"A2d","text":"Courts should give police wider discretion over searches when officials can show a substantial public-safety risk.","x":0.0,"y":1.25,"facet":"A2","tier":"Standard","paired_with":null,"id":"Q050"},{"key":"E5e","text":"Consumer-protection rules should standardize important contract terms even when this limits the variety of products offered.","x":-1.0,"y":0.0,"facet":"E5","tier":"Supporting","paired_with":null,"id":"Q051"},{"key":"A5e","text":"Minor political parties should receive legislative representation roughly in proportion to their share of the vote.","x":0.0,"y":-1.0,"facet":"A5","tier":"Supporting","paired_with":null,"id":"Q052"},{"key":"E6e","text":"Private banks should allocate most business credit without government targets for particular industries.","x":1.25,"y":0.0,"facet":"E6","tier":"Standard","paired_with":null,"id":"Q053"},{"key":"A6e","text":"Each asylum claim should receive an individualized hearing even when the number of arrivals is unusually high.","x":0.0,"y":-1.25,"facet":"A6","tier":"Standard","paired_with":null,"id":"Q054"},{"key":"E1e","text":"Subject to contracts and general law, profitable firms should decide for themselves how to divide earnings among owners, workers, and reinvestment.","x":1.25,"y":0.0,"facet":"E1","tier":"Standard","paired_with":null,"id":"Q055"},{"key":"X3","text":"During a declared national emergency, government may direct private production of essential goods for a limited period subject to legislative renewal.","x":-1.0,"y":1.5,"facet":"X","tier":"Cross-axis","paired_with":null,"id":"Q056"},{"key":"A1e","text":"A peaceful organization should not be banned solely because it rejects the existing constitutional order.","x":0.0,"y":-1.25,"facet":"A1","tier":"Standard","paired_with":null,"id":"Q057"},{"key":"E2e","text":"Government should guarantee every adult a minimum income floor, even if doing so requires higher taxes.","x":-1.5,"y":0.0,"facet":"E2","tier":"Anchor","paired_with":null,"id":"Q058"},{"key":"A2e","text":"A person in police custody should have access to a lawyer before substantive questioning begins.","x":0.0,"y":-1.0,"facet":"A2","tier":"Supporting","paired_with":null,"id":"Q059"},{"key":"E3e","text":"Workers should elect representatives to the boards of large companies.","x":-1.25,"y":0.0,"facet":"E3","tier":"Standard","paired_with":null,"id":"Q060"},{"key":"A3e","text":"During a serious outbreak of a contagious disease, government may require vaccination for access to crowded public settings.","x":0.0,"y":1.0,"facet":"A3","tier":"Supporting","paired_with":null,"id":"Q061"},{"key":"E4e","text":"A public pension should guarantee a basic retirement benefit that does not depend on financial-market performance.","x":-1.25,"y":0.0,"facet":"E4","tier":"Standard","paired_with":null,"id":"Q062"},{"key":"A4e","text":"Election administration should be institutionally independent from the government currently in office.","x":0.0,"y":-1.0,"facet":"A4","tier":"Supporting","paired_with":null,"id":"Q063"},{"key":"E1f","text":"When a competitive private market can provide the same service, government should generally sell businesses it owns.","x":1.25,"y":0.0,"facet":"E1","tier":"Standard","paired_with":null,"id":"Q064"},{"key":"A6f","text":"Government may detain people who cross a border without authorization while their identities and legal claims are resolved.","x":0.0,"y":1.0,"facet":"A6","tier":"Supporting","paired_with":null,"id":"Q065"},{"key":"E6f","text":"Vacant urban land held mainly for speculation should face higher taxes than land in active use.","x":-1.0,"y":0.0,"facet":"E6","tier":"Supporting","paired_with":null,"id":"Q066"},{"key":"A5f","text":"Electoral rules should favor stable governing majorities even when small parties receive fewer seats than their vote share would imply.","x":0.0,"y":1.0,"facet":"A5","tier":"Supporting","paired_with":null,"id":"Q067"},{"key":"E5f","text":"Well-informed adults should be able to accept greater financial risk in exchange for fewer regulatory protections.","x":1.25,"y":-0.25,"facet":"E5","tier":"Standard","paired_with":null,"id":"Q068"},{"key":"A4f","text":"Voting in national elections should be compulsory, with a modest penalty for unjustified nonparticipation.","x":0.0,"y":1.0,"facet":"A4","tier":"Supporting","paired_with":null,"id":"Q069"},{"key":"E4f","text":"Retirement saving should rely mainly on accounts owned and invested by individuals.","x":1.5,"y":0.0,"facet":"E4","tier":"Anchor","paired_with":null,"id":"Q070"},{"key":"A3f","text":"Parents should have broad discretion over a child's education provided that minimum academic standards are met.","x":0.25,"y":-1.0,"facet":"A3","tier":"Supporting","paired_with":null,"id":"Q071"},{"key":"E3f","text":"After a lawful strike has continued for a reasonable period, a firm should be allowed to hire permanent replacement workers.","x":1.25,"y":0.0,"facet":"E3","tier":"Standard","paired_with":null,"id":"Q072"},{"key":"A2f","text":"A court should be able to impose preventive restrictions after a sentence ends when a repeat serious offender is judged highly dangerous.","x":0.0,"y":1.25,"facet":"A2","tier":"Standard","paired_with":null,"id":"Q073"},{"key":"E2f","text":"Public income support should be tightly targeted to people who cannot meet basic needs rather than offered broadly.","x":1.0,"y":0.0,"facet":"E2","tier":"Supporting","paired_with":null,"id":"Q074"},{"key":"X4","text":"A private employer should generally be free to enforce a workplace dress code even when an employee objects on religious grounds.","x":1.0,"y":0.75,"facet":"X","tier":"Cross-axis","paired_with":null,"id":"Q075"},{"key":"A1f","text":"Government may prohibit an organization that advocates replacing democracy even when the group is not planning violence.","x":0.0,"y":1.25,"facet":"A1","tier":"Standard","paired_with":null,"id":"Q076"},{"key":"E4g","text":"Unemployment benefits should replace a meaningful share of lost wages even if that requires higher payroll taxes.","x":-1.25,"y":0.0,"facet":"E4","tier":"Standard","paired_with":null,"id":"Q077"},{"key":"A4g","text":"Legislative oversight bodies should have access to national-security operations even when some details must remain confidential.","x":0.0,"y":-1.25,"facet":"A4","tier":"Standard","paired_with":null,"id":"Q078"},{"key":"E5g","text":"During a severe shortage, public agencies should be able to set temporary maximum prices for essential goods.","x":-1.25,"y":0.25,"facet":"E5","tier":"Standard","paired_with":null,"id":"Q079"},{"key":"A5g","text":"Public institutions should accommodate minority cultural or religious practices unless doing so creates a substantial burden on others.","x":0.0,"y":-1.0,"facet":"A5","tier":"Supporting","paired_with":null,"id":"Q080"},{"key":"E6g","text":"On a new lease, a landlord should generally be free to set rent according to market demand.","x":1.25,"y":0.0,"facet":"E6","tier":"Standard","paired_with":null,"id":"Q081"},{"key":"A6g","text":"A person who reveals an unlawful national-security program should be allowed to raise a public-interest defense in court.","x":0.0,"y":-1.0,"facet":"A6","tier":"Supporting","paired_with":null,"id":"Q082"},{"key":"E1g","text":"A high concentration of private ownership can justify public intervention even when current consumer prices are low.","x":-1.25,"y":0.0,"facet":"E1","tier":"Standard","paired_with":null,"id":"Q083"},{"key":"A1g","text":"Journalists should be legally free to publish classified information of public importance unless a court finds a specific and serious risk of harm.","x":0.0,"y":-1.25,"facet":"A1","tier":"Standard","paired_with":null,"id":"Q084"},{"key":"E2g","text":"Reducing large differences in disposable income is a legitimate goal of tax policy, even when basic needs are already met.","x":-1.25,"y":0.0,"facet":"E2","tier":"Standard","paired_with":null,"id":"Q085"},{"key":"A2g","text":"A low-risk defendant should not remain in jail before trial solely because the defendant cannot afford cash bail.","x":-0.25,"y":-1.0,"facet":"A2","tier":"Supporting","paired_with":null,"id":"Q086"},{"key":"E3g","text":"Contract workers who depend economically on one platform should receive protections similar to those of employees.","x":-1.25,"y":0.0,"facet":"E3","tier":"Standard","paired_with":null,"id":"Q087"},{"key":"A3g","text":"All schools should be required to teach a common civic curriculum in addition to basic academic subjects.","x":0.0,"y":1.0,"facet":"A3","tier":"Supporting","paired_with":null,"id":"Q088"},{"key":"E6h","text":"A dominant firm should be broken up when its market power persistently blocks new competitors, even if its prices remain low.","x":-1.0,"y":0.0,"facet":"E6","tier":"Supporting","paired_with":null,"id":"Q089"},{"key":"A5h","text":"National institutions should apply uniform rules rather than create separate accommodations for cultural or religious groups.","x":0.0,"y":1.0,"facet":"A5","tier":"Supporting","paired_with":null,"id":"Q090"},{"key":"E5h","text":"During a shortage, prices should generally be allowed to rise unless there is evidence of collusion or deception.","x":1.5,"y":0.0,"facet":"E5","tier":"Anchor","paired_with":null,"id":"Q091"},{"key":"A4h","text":"An elected executive should be able to dismiss senior civil servants in order to carry out its policy program.","x":0.0,"y":1.25,"facet":"A4","tier":"Standard","paired_with":null,"id":"Q092"},{"key":"E4h","text":"Adults should normally purchase non-emergency services themselves rather than receive them through universal public programs.","x":1.25,"y":0.0,"facet":"E4","tier":"Standard","paired_with":null,"id":"Q093"},{"key":"X5","text":"A local government should be free to suspend a national business regulation it considers unnecessary when the effects remain within its borders.","x":0.5,"y":-0.5,"facet":"X","tier":"Cross-axis","paired_with":null,"id":"Q094"},{"key":"A3h","text":"Possession of a small amount of a recreational drug for personal use should be handled as a health or civil matter rather than a crime.","x":0.0,"y":-1.25,"facet":"A3","tier":"Standard","paired_with":null,"id":"Q095"},{"key":"E3h","text":"Rules on overtime should usually be left to contracts unless a clear health or safety risk is involved.","x":1.25,"y":0.0,"facet":"E3","tier":"Standard","paired_with":null,"id":"Q096"},{"key":"A2h","text":"When rehabilitation and secure confinement conflict, prisons should give greater priority to confinement.","x":0.0,"y":1.25,"facet":"A2","tier":"Standard","paired_with":null,"id":"Q097"},{"key":"E2h","text":"The tax system should prioritize incentives for investment over reducing differences in after-tax income.","x":1.5,"y":0.0,"facet":"E2","tier":"Anchor","paired_with":null,"id":"Q098"},{"key":"A1h","text":"An elected government should be able to set the editorial priorities of publicly funded broadcasters.","x":0.0,"y":1.25,"facet":"A1","tier":"Standard","paired_with":null,"id":"Q099"},{"key":"E1h","text":"The prospect of unequal ownership is an acceptable consequence of allowing people to invest and build businesses.","x":1.25,"y":0.0,"facet":"E1","tier":"Standard","paired_with":null,"id":"Q100"},{"key":"A6h","text":"A security agency should be allowed to withhold some operational programs from legislative committees when disclosure could compromise them.","x":0.0,"y":1.25,"facet":"A6","tier":"Standard","paired_with":null,"id":"Q101"}];
+    const FACETS = {"E1":{"name":"Ownership and enterprise","axis":"x","negative":"Public or shared ownership","positive":"Private ownership"},"E2":{"name":"Tax and redistribution","axis":"x","negative":"Redistribution","positive":"Retention and incentives"},"E3":{"name":"Labor and the workplace","axis":"x","negative":"Collective protections","positive":"Contract flexibility"},"E4":{"name":"Public services and insurance","axis":"x","negative":"Universal provision","positive":"Individual provision"},"E5":{"name":"Regulation and market rules","axis":"x","negative":"Protective regulation","positive":"Market discretion"},"E6":{"name":"Trade, finance, and market power","axis":"x","negative":"Public direction","positive":"Market allocation"},"A1":{"name":"Expression and association","axis":"y","negative":"Expression and association","positive":"Social-order limits"},"A2":{"name":"Privacy, policing, and due process","axis":"y","negative":"Privacy and due process","positive":"Enforcement discretion"},"A3":{"name":"Personal and family autonomy","axis":"y","negative":"Personal autonomy","positive":"Common rules"},"A4":{"name":"Constitutional and executive power","axis":"y","negative":"Checks and constraints","positive":"Executive latitude"},"A5":{"name":"Participation and pluralism","axis":"y","negative":"Decentralized pluralism","positive":"Uniform governance"},"A6":{"name":"Borders, service, and security","axis":"y","negative":"Individual safeguards","positive":"Security authority"},"X":{"name":"Cross-axis institutions","axis":"xy","negative":"Context dependent","positive":"Context dependent"}};
+    const RESPONSES = [{"value":-2,"label":"Strongly disagree"},{"value":-1,"label":"Disagree"},{"value":0,"label":"Neutral"},{"value":1,"label":"Agree"},{"value":2,"label":"Strongly agree"}];
+    const APP_VERSION = "1.0";
+    const ATTEMPTS_KEY = "political-compass-101.attempts.v1";
+    const DRAFT_KEY = "political-compass-101.draft.v1";
+    const memoryStore = new Map();
+    let storageAvailable = true;
+    let activeAttempt = null;
+    let currentIndex = 0;
+    let currentDetailId = null;
+
+    const $ = (id) => document.getElementById(id);
+    const views = Array.from(document.querySelectorAll(".view"));
+
+    function escapeHtml(value) {
+      return String(value).replace(/[&<>'"]/g, (char) => ({"&":"&amp;", "<":"&lt;", ">":"&gt;", "'":"&#39;", '"':"&quot;"}[char]));
+    }
+
+    function makeId() {
+      if (globalThis.crypto && typeof globalThis.crypto.randomUUID === "function") return globalThis.crypto.randomUUID();
+      return `pc101-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+    }
+
+    function readStore(key, fallback) {
+      try {
+        const raw = localStorage.getItem(key);
+        return raw ? JSON.parse(raw) : fallback;
+      } catch (error) {
+        storageAvailable = false;
+        return memoryStore.has(key) ? memoryStore.get(key) : fallback;
+      }
+    }
+
+    function writeStore(key, value) {
+      memoryStore.set(key, value);
+      try {
+        localStorage.setItem(key, JSON.stringify(value));
+      } catch (error) {
+        storageAvailable = false;
+      }
+      updateStorageNotice();
+    }
+
+    function removeStore(key) {
+      memoryStore.delete(key);
+      try { localStorage.removeItem(key); } catch (error) { storageAvailable = false; }
+      updateStorageNotice();
+    }
+
+    function updateStorageNotice() {
+      $("storageNotice").classList.toggle("visible", !storageAvailable);
+    }
+
+    function showView(id) {
+      views.forEach((view) => view.classList.toggle("active", view.id === id));
+      window.scrollTo({top: 0, behavior: "smooth"});
+      document.title = id === "homeView" ? "Political Compass 101" : `${$(id).querySelector("h1, h2")?.textContent || "Political Compass 101"} | Political Compass 101`;
+    }
+
+    function announce(text) { $("announcer").textContent = text; }
+
+    function setSwitch(button, state) {
+      button.setAttribute("aria-checked", state ? "true" : "false");
+    }
+
+    function toggleSwitch(button) {
+      const next = button.getAttribute("aria-checked") !== "true";
+      setSwitch(button, next);
+      return next;
+    }
+
+    function formatDate(iso) {
+      try { return new Intl.DateTimeFormat(undefined, {dateStyle: "medium", timeStyle: "short"}).format(new Date(iso)); }
+      catch (error) { return new Date(iso).toLocaleString(); }
+    }
+
+    function responseLabel(value) {
+      return RESPONSES.find((response) => response.value === Number(value))?.label || "Not answered";
+    }
+
+    function clampScore(value) { return Math.max(-10, Math.min(10, value)); }
+
+    function scoreAttempt(answers, provisional = false) {
+      let rawX = 0, rawY = 0, answeredX = 0, answeredY = 0;
+      const totalX = ITEMS.reduce((sum, item) => sum + Math.abs(item.x), 0);
+      const totalY = ITEMS.reduce((sum, item) => sum + Math.abs(item.y), 0);
+      const facetRaw = {};
+      const facetMass = {};
+
+      ITEMS.forEach((item) => {
+        const response = answers[item.key];
+        if (response === undefined) return;
+        rawX += response * item.x;
+        rawY += response * item.y;
+        answeredX += Math.abs(item.x);
+        answeredY += Math.abs(item.y);
+        if (item.facet !== "X") {
+          const axis = FACETS[item.facet].axis;
+          const coefficient = axis === "x" ? item.x : item.y;
+          facetRaw[item.facet] = (facetRaw[item.facet] || 0) + response * coefficient;
+          facetMass[item.facet] = (facetMass[item.facet] || 0) + Math.abs(coefficient);
+        }
+      });
+
+      function normalize(raw, answeredMass, totalMass) {
+        if (!answeredMass) return 0;
+        let result = 10 * raw / (2 * answeredMass);
+        if (provisional) result *= Math.sqrt(answeredMass / totalMass);
+        return clampScore(result);
+      }
+
+      const facets = {};
+      Object.keys(FACETS).filter((code) => code !== "X").forEach((code) => {
+        facets[code] = facetMass[code] ? clampScore(10 * (facetRaw[code] || 0) / (2 * facetMass[code])) : 0;
+      });
+
+      const pairs = [];
+      const byKey = Object.fromEntries(ITEMS.map((item) => [item.key, item]));
+      const seen = new Set();
+      ITEMS.forEach((item) => {
+        if (!item.paired_with || seen.has(item.key) || answers[item.key] === undefined || answers[item.paired_with] === undefined) return;
+        const other = byKey[item.paired_with];
+        if (!other) return;
+        const itemCoefficient = FACETS[item.facet].axis === "x" ? item.x : item.y;
+        const otherCoefficient = FACETS[other.facet].axis === "x" ? other.x : other.y;
+        const alignedA = answers[item.key] * Math.sign(itemCoefficient);
+        const alignedB = answers[other.key] * Math.sign(otherCoefficient);
+        pairs.push(Math.abs(alignedA - alignedB));
+        seen.add(item.key); seen.add(other.key);
+      });
+      const coherence = pairs.length ? Math.round(100 * (1 - pairs.reduce((a, b) => a + b, 0) / (4 * pairs.length))) : null;
+
+      const counts = RESPONSES.map((response) => Object.values(answers).filter((value) => Number(value) === response.value).length);
+      const answeredCount = Object.keys(answers).length;
+      const maxShare = answeredCount ? Math.max(...counts) / answeredCount : 0;
+
+      return {
+        x: normalize(rawX, answeredX, totalX),
+        y: normalize(rawY, answeredY, totalY),
+        facets,
+        coherence,
+        maxShare,
+        answeredCount,
+      };
+    }
+
+    function updateGraph(element, x, y, pulse = false) {
+      const left = ((clampScore(x) + 10) / 20) * 100;
+      const top = ((10 - clampScore(y)) / 20) * 100;
+      element.style.setProperty("--point-x", `${left}%`);
+      element.style.setProperty("--point-y", `${top}%`);
+      element.setAttribute("aria-label", `Placement: economic X ${x.toFixed(1)}, civic Y ${y.toFixed(1)}`);
+      if (pulse) {
+        const point = element.querySelector(".compass-point");
+        point.classList.remove("pulse");
+        requestAnimationFrame(() => point.classList.add("pulse"));
+      }
+    }
+
+    function axisWord(score, negative, positive) {
+      if (Math.abs(score) < 1.25) return "mixed";
+      return score < 0 ? negative : positive;
+    }
+
+    function placementName(x, y) {
+      const xWord = axisWord(x, "public coordination", "market coordination");
+      const yWord = axisWord(y, "civic autonomy", "institutional authority");
+      if (xWord === "mixed" && yWord === "mixed") return "Near the two-axis center";
+      if (xWord === "mixed") return `Economically mixed with ${yWord}`;
+      if (yWord === "mixed") return `${xWord} with a mixed civic-power score`;
+      return `${xWord} + ${yWord}`;
+    }
+
+    function strengthText(score) {
+      const magnitude = Math.abs(score);
+      if (magnitude < 1.25) return "near the midpoint";
+      if (magnitude < 4) return "a mild lean";
+      if (magnitude < 7) return "a clear lean";
+      return "a strong lean";
+    }
+
+    function placementDescription(x, y) {
+      const economicDirection = Math.abs(x) < 1.25 ? "neither economic pole" : (x < 0 ? "public coordination" : "market coordination");
+      const civicDirection = Math.abs(y) < 1.25 ? "neither civic-power pole" : (y < 0 ? "civic autonomy" : "institutional authority");
+      return `Your economic score shows ${strengthText(x)} toward ${economicDirection}; your civic-power score shows ${strengthText(y)} toward ${civicDirection}. Treat the coordinates as a compact summary of these answers, not as a party label.`;
+    }
+
+    function renderFacetGrid(container, metrics) {
+      const codes = ["E1", "E2", "E3", "E4", "E5", "E6", "A1", "A2", "A3", "A4", "A5", "A6"];
+      container.innerHTML = codes.map((code) => {
+        const facet = FACETS[code];
+        const value = metrics.facets[code] || 0;
+        const left = ((value + 10) / 20) * 100;
+        return `<div class="facet-card">
+          <div class="facet-head"><span>${escapeHtml(facet.name)}</span><strong>${value.toFixed(1)}</strong></div>
+          <div class="facet-track" aria-label="${escapeHtml(facet.name)} score ${value.toFixed(1)}"><span class="facet-marker" style="left:${left}%"></span></div>
+          <div class="facet-labels"><span>${escapeHtml(facet.negative)}</span><span>${escapeHtml(facet.positive)}</span></div>
+        </div>`;
+      }).join("");
+    }
+
+    function qualityMessage(metrics) {
+      let coherenceText = "Cross-item coherence was not available.";
+      if (metrics.coherence !== null) {
+        if (metrics.coherence >= 75) coherenceText = `Cross-item coherence was ${metrics.coherence}%, suggesting that the deliberately opposed item pairs were answered in a broadly compatible way.`;
+        else if (metrics.coherence >= 50) coherenceText = `Cross-item coherence was ${metrics.coherence}%. That can reflect issue-by-issue nuance, uncertainty, or some tension among answers.`;
+        else coherenceText = `Cross-item coherence was ${metrics.coherence}%. Review the opposed item pairs before treating the coordinates as stable.`;
+      }
+      const variationText = metrics.maxShare > .85 ? " More than 85% of responses used one category, so limited response variation also calls for caution." : "";
+      return `<strong>Response-pattern note.</strong> ${coherenceText}${variationText} This indicator is not a reliability coefficient and does not mark any answer as correct.`;
+    }
+
+    function renderHome() {
+      const draft = readStore(DRAFT_KEY, null);
+      const card = $("resumeCard");
+      if (draft && draft.version === APP_VERSION && draft.answers) {
+        const answered = Object.keys(draft.answers).length;
+        $("resumeText").textContent = `${answered} of ${ITEMS.length} answered / ${draft.label || "Unlabeled attempt"}`;
+        card.classList.add("visible");
+      } else {
+        card.classList.remove("visible");
+      }
+      updateStorageNotice();
+    }
+
+    function openHome() { renderHome(); showView("homeView"); }
+
+    function openSetup() {
+      $("attemptLabel").value = "";
+      setSwitch($("setupLiveToggle"), true);
+      showView("setupView");
+      setTimeout(() => $("attemptLabel").focus(), 100);
+    }
+
+    function beginAttempt() {
+      const existing = readStore(DRAFT_KEY, null);
+      if (existing && Object.keys(existing.answers || {}).length && !confirm("Starting a new attempt will replace the unfinished attempt. Continue?")) return;
+      const label = $("attemptLabel").value.trim() || `Attempt ${new Date().toLocaleDateString()}`;
+      activeAttempt = {
+        id: makeId(),
+        version: APP_VERSION,
+        label,
+        startedAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        answers: {},
+        currentIndex: 0,
+        showLive: $("setupLiveToggle").getAttribute("aria-checked") === "true",
+      };
+      currentIndex = 0;
+      saveDraft();
+      openTest();
+    }
+
+    function saveDraft() {
+      if (!activeAttempt) return;
+      activeAttempt.currentIndex = currentIndex;
+      activeAttempt.updatedAt = new Date().toISOString();
+      writeStore(DRAFT_KEY, activeAttempt);
+    }
+
+    function resumeAttempt() {
+      const draft = readStore(DRAFT_KEY, null);
+      if (!draft || draft.version !== APP_VERSION) return openSetup();
+      activeAttempt = draft;
+      currentIndex = Math.max(0, Math.min(ITEMS.length - 1, Number(draft.currentIndex) || 0));
+      openTest();
+    }
+
+    function openTest() {
+      if (!activeAttempt) return openHome();
+      setSwitch($("testLiveToggle"), Boolean(activeAttempt.showLive));
+      $("livePanel").classList.toggle("hidden", !activeAttempt.showLive);
+      showView("testView");
+      renderQuestion();
+    }
+
+    function renderQuestion() {
+      const item = ITEMS[currentIndex];
+      const selected = activeAttempt.answers[item.key];
+      const answeredCount = Object.keys(activeAttempt.answers).length;
+      $("questionStableId").textContent = item.id;
+      $("questionText").textContent = item.text;
+      $("progressText").textContent = `Question ${currentIndex + 1} of ${ITEMS.length}`;
+      $("progressPercent").textContent = `${Math.round(answeredCount / ITEMS.length * 100)}% answered`;
+      $("progressFill").style.width = `${answeredCount / ITEMS.length * 100}%`;
+      $("backQuestion").disabled = currentIndex === 0;
+      $("nextQuestion").disabled = selected === undefined;
+      $("nextQuestion").innerHTML = currentIndex === ITEMS.length - 1 ? `See results <span class="arrow" aria-hidden="true">&rarr;</span>` : `Next question <span class="arrow" aria-hidden="true">&rarr;</span>`;
+      $("answerOptions").innerHTML = RESPONSES.map((response, index) => `
+        <button class="answer-option${selected === response.value ? " selected" : ""}" type="button" role="radio" aria-checked="${selected === response.value}" data-value="${response.value}">
+          <span class="answer-radio" aria-hidden="true"></span>
+          <span>${response.label}</span>
+          <span class="key-hint">${index + 1}</span>
+        </button>`).join("");
+      Array.from($("answerOptions").querySelectorAll("button")).forEach((button) => button.addEventListener("click", () => selectAnswer(Number(button.dataset.value))));
+      updateLiveGraph(false);
+      announce(`Question ${currentIndex + 1} of ${ITEMS.length}`);
+    }
+
+    function selectAnswer(value) {
+      const item = ITEMS[currentIndex];
+      activeAttempt.answers[item.key] = value;
+      saveDraft();
+      Array.from($("answerOptions").querySelectorAll("button")).forEach((button) => {
+        const chosen = Number(button.dataset.value) === value;
+        button.classList.toggle("selected", chosen);
+        button.setAttribute("aria-checked", chosen ? "true" : "false");
+      });
+      $("nextQuestion").disabled = false;
+      const answeredCount = Object.keys(activeAttempt.answers).length;
+      $("progressPercent").textContent = `${Math.round(answeredCount / ITEMS.length * 100)}% answered`;
+      $("progressFill").style.width = `${answeredCount / ITEMS.length * 100}%`;
+      updateLiveGraph(true);
+      announce(`${responseLabel(value)} selected. Press Next question to continue.`);
+    }
+
+    function updateLiveGraph(pulse) {
+      const metrics = scoreAttempt(activeAttempt.answers, true);
+      updateGraph($("liveCompass"), metrics.x, metrics.y, pulse);
+      $("liveX").textContent = metrics.x.toFixed(1);
+      $("liveY").textContent = metrics.y.toFixed(1);
+    }
+
+    function goNext() {
+      const item = ITEMS[currentIndex];
+      if (activeAttempt.answers[item.key] === undefined) return;
+      if (currentIndex === ITEMS.length - 1) return finishAttempt();
+      currentIndex += 1;
+      saveDraft();
+      renderQuestion();
+    }
+
+    function goBack() {
+      if (currentIndex === 0) return;
+      currentIndex -= 1;
+      saveDraft();
+      renderQuestion();
+    }
+
+    function finishAttempt() {
+      if (Object.keys(activeAttempt.answers).length !== ITEMS.length) {
+        alert("Please answer every question before calculating the final placement.");
+        return;
+      }
+      const metrics = scoreAttempt(activeAttempt.answers, false);
+      const completed = {
+        ...activeAttempt,
+        completedAt: new Date().toISOString(),
+        currentIndex: ITEMS.length - 1,
+        metrics,
+      };
+      const attempts = readStore(ATTEMPTS_KEY, []);
+      attempts.unshift(completed);
+      writeStore(ATTEMPTS_KEY, attempts.slice(0, 100));
+      removeStore(DRAFT_KEY);
+      activeAttempt = completed;
+      renderResult(completed);
+      showView("resultView");
+    }
+
+    function renderResult(attempt) {
+      const metrics = attempt.metrics || scoreAttempt(attempt.answers, false);
+      $("resultTitle").textContent = placementName(metrics.x, metrics.y);
+      $("resultDescription").textContent = placementDescription(metrics.x, metrics.y);
+      $("resultX").textContent = metrics.x.toFixed(1);
+      $("resultY").textContent = metrics.y.toFixed(1);
+      $("resultCoherence").textContent = metrics.coherence === null ? "--" : `${metrics.coherence}%`;
+      updateGraph($("resultCompass"), metrics.x, metrics.y, false);
+      renderFacetGrid($("facetGrid"), metrics);
+      $("qualityNote").innerHTML = qualityMessage(metrics);
+    }
+
+    function getAttempts() {
+      const attempts = readStore(ATTEMPTS_KEY, []);
+      return Array.isArray(attempts) ? attempts : [];
+    }
+
+    function renderAttempts() {
+      const attempts = getAttempts();
+      const list = $("attemptList");
+      if (!attempts.length) {
+        list.innerHTML = `<div class="empty-state panel"><div class="empty-mark" aria-hidden="true">+</div><h3>No saved attempts yet</h3><p class="muted">Complete the assessment and it will appear here on this device.</p><button class="btn btn-primary" id="emptyStart" type="button">Start the test</button></div>`;
+        $("emptyStart").addEventListener("click", openSetup);
+        return;
+      }
+      list.innerHTML = attempts.map((attempt) => {
+        const metrics = attempt.metrics || scoreAttempt(attempt.answers || {}, false);
+        const left = ((metrics.x + 10) / 20) * 100;
+        const top = ((10 - metrics.y) / 20) * 100;
+        return `<article class="attempt-card panel" data-id="${escapeHtml(attempt.id)}">
+          <div class="mini-compass" role="img" aria-label="X ${metrics.x.toFixed(1)}, Y ${metrics.y.toFixed(1)}"><span class="mini-point" style="left:${left}%;top:${top}%"></span></div>
+          <div><div class="attempt-title">${escapeHtml(attempt.label || "Unlabeled attempt")}</div><div class="attempt-meta">${escapeHtml(formatDate(attempt.completedAt || attempt.updatedAt))} / X ${metrics.x.toFixed(1)}, Y ${metrics.y.toFixed(1)}</div></div>
+          <div class="attempt-actions"><button class="btn btn-quiet view-attempt" type="button">View</button><button class="btn btn-quiet delete-attempt" type="button">Delete</button></div>
+        </article>`;
+      }).join("");
+      Array.from(list.querySelectorAll(".view-attempt")).forEach((button) => button.addEventListener("click", () => openAttemptDetail(button.closest("article").dataset.id)));
+      Array.from(list.querySelectorAll(".delete-attempt")).forEach((button) => button.addEventListener("click", () => deleteAttempt(button.closest("article").dataset.id)));
+    }
+
+    function openAttempts() {
+      renderAttempts();
+      showView("attemptsView");
+    }
+
+    function deleteAttempt(id) {
+      const attempt = getAttempts().find((entry) => entry.id === id);
+      if (!attempt || !confirm(`Delete "${attempt.label || "this attempt"}" from this browser?`)) return;
+      writeStore(ATTEMPTS_KEY, getAttempts().filter((entry) => entry.id !== id));
+      renderAttempts();
+    }
+
+    function openAttemptDetail(id) {
+      const attempt = getAttempts().find((entry) => entry.id === id);
+      if (!attempt) return;
+      currentDetailId = id;
+      const metrics = attempt.metrics || scoreAttempt(attempt.answers || {}, false);
+      $("detailHeading").textContent = attempt.label || "Unlabeled attempt";
+      $("detailDate").textContent = formatDate(attempt.completedAt || attempt.updatedAt);
+      $("detailPlacement").textContent = placementName(metrics.x, metrics.y);
+      $("detailX").textContent = metrics.x.toFixed(1);
+      $("detailY").textContent = metrics.y.toFixed(1);
+      updateGraph($("detailCompass"), metrics.x, metrics.y, false);
+      $("detailPills").innerHTML = `<div class="score-pill"><span>Economic X</span><strong>${metrics.x.toFixed(1)}</strong></div><div class="score-pill"><span>Civic Y</span><strong>${metrics.y.toFixed(1)}</strong></div><div class="score-pill"><span>Coherence</span><strong>${metrics.coherence === null ? "--" : `${metrics.coherence}%`}</strong></div>`;
+      renderFacetGrid($("detailFacets"), metrics);
+      $("detailAnswers").innerHTML = ITEMS.map((item) => `<div class="answer-row"><strong>${item.id}</strong><span>${escapeHtml(item.text)}</span><span class="answer-value">${escapeHtml(responseLabel(attempt.answers[item.key]))}</span></div>`).join("");
+      showView("attemptDetailView");
+    }
+
+    function setLivePreference(value) {
+      if (!activeAttempt) return;
+      activeAttempt.showLive = value;
+      setSwitch($("testLiveToggle"), value);
+      $("livePanel").classList.toggle("hidden", !value);
+      saveDraft();
+    }
+
+    $("brandHome").addEventListener("click", openHome);
+    $("startButton").addEventListener("click", openSetup);
+    $("reviewButton").addEventListener("click", openAttempts);
+    $("resumeButton").addEventListener("click", resumeAttempt);
+    $("setupLiveToggle").addEventListener("click", (event) => toggleSwitch(event.currentTarget));
+    $("cancelSetup").addEventListener("click", openHome);
+    $("beginButton").addEventListener("click", beginAttempt);
+    $("exitTest").addEventListener("click", () => { saveDraft(); openHome(); });
+    $("testLiveToggle").addEventListener("click", (event) => setLivePreference(toggleSwitch(event.currentTarget)));
+    $("backQuestion").addEventListener("click", goBack);
+    $("nextQuestion").addEventListener("click", goNext);
+    $("reviewSavedButton").addEventListener("click", openAttempts);
+    $("printResult").addEventListener("click", () => window.print());
+    $("retakeButton").addEventListener("click", openSetup);
+    $("attemptsHome").addEventListener("click", openHome);
+    $("detailBack").addEventListener("click", openAttempts);
+
+    document.addEventListener("keydown", (event) => {
+      if (!$("testView").classList.contains("active") || event.altKey || event.ctrlKey || event.metaKey) return;
+      if (/^[1-5]$/.test(event.key)) {
+        event.preventDefault();
+        selectAnswer(RESPONSES[Number(event.key) - 1].value);
+      } else if (event.key === "Enter" && !$("nextQuestion").disabled) {
+        event.preventDefault();
+        goNext();
+      } else if (event.key === "ArrowLeft") {
+        event.preventDefault();
+        goBack();
+      }
+    });
+
+    renderHome();
+  </script>
+</body>
+</html>

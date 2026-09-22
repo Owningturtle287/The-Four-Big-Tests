@@ -1,0 +1,9 @@
+{
+  "appId": "com.owningturtle.fourbigtests",
+  "appName": "The Four Big Tests",
+  "webDir": "www",
+  "backgroundColor": "#f6f7fb",
+  "server": { "androidScheme": "https" },
+  "ios": { "contentInset": "automatic", "backgroundColor": "#f6f7fb" },
+  "android": { "backgroundColor": "#f6f7fb", "allowMixedContent": false }
+}

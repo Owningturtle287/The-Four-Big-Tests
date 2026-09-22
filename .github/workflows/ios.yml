@@ -1,0 +1,28 @@
+name: Prepare iOS app
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  ios:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm ci
+        working-directory: native
+      - run: npm run build
+        working-directory: native
+      - run: npx cap add ios
+        working-directory: native
+      - run: node icons.mjs ios
+        working-directory: native
+      - run: npx cap sync ios
+        working-directory: native
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Four-Big-Tests-iOS-Xcode-project
+          path: native/ios
+          retention-days: 90
