@@ -1,5 +1,7 @@
 # The Four Big Tests
 
+**[Open the live app](https://owningturtle287.github.io/The-Four-Big-Tests/)** · **[Download the Android test build](https://github.com/Owningturtle287/The-Four-Big-Tests/actions/runs/35717207876)** (open the APK artifact under Artifacts; GitHub sign-in may be required).
+
 A light, mobile-first assessment app with four top tabs, offline installation, named progress saves, unlimited retakes, dated result history, private notes, and JSON backup import/export. There is no app-imposed save limit; device storage capacity still applies.
 
 ## The four assessments
@@ -30,6 +32,8 @@ node scripts/serve.mjs --dist
 The production site is in `dist/`. All URLs are relative, including the manifest, modules, and service worker, so it works under the GitHub Pages repository subpath.
 
 ## Publish from this repository
+
+Pages is enabled and the initial deployment succeeded on September 22, 2026. The steps below document the setup for a new fork.
 
 1. In **Settings → Pages → Build and deployment**, select **GitHub Actions** as the source. The repository owner must enable this setting once; the workflow's standard token cannot enable Pages for a new repository.
 2. The **Deploy installable app** workflow tests, builds, and publishes the app on pushes to `main`. Once Pages is enabled, rerun that workflow if its first run failed during setup.
@@ -88,6 +92,8 @@ npx cap open ios
 The original political graph's economic/governance structure, 12 facets, and signed weights have been integrated into the new app. The app's new light-theme compass is responsive and includes the same conceptual quadrants. The original package remains in `docs/source/` for auditability.
 
 ## Verification
+
+The initial release passed all 15 automated checks locally and in GitHub Actions. The Pages deployment and Android APK build both succeeded. Live-browser checks confirmed question rendering, named saves, reload persistence, and practice-mode generation. These checks do not substitute for physical-device testing or psychometric validation.
 
 Run `npm test` for reverse-scoring endpoints, incomplete-scale handling, political normalization and coverage, abstract transformations, generated-puzzle structure and solutions, repeat avoidance, timer deadlines, and backup integrity. The generator checks examine 20,000 variants across all 20 task families. These are software correctness tests, **not evidence of psychometric validity**.
 
